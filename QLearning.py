@@ -3,6 +3,8 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
+import datetime
+import os
 
 
 # Print iterations progress
@@ -56,10 +58,13 @@ def test_trained_model(model):
         if done:
             break
 
+def load_trained_model(path):
+    return tf.keras.models.load_model(path)
+
 # Q-Learning settings
 DISCOUNT = 0.95
-EPISODES = 5000
-STATS_EVERY = 10
+EPISODES = 10
+STATS_EVERY = 1
 SHOW_EVERY = 100
 
 # Exploration settings
@@ -91,8 +96,12 @@ model2 = tf.keras.Sequential([
 
 model2.compile(loss='mse', optimizer='adam', metrics=['mae'])
 
+d1 = datetime.datetime.today()
+
 for episode in range(EPISODES):
-    print_progress_bar(episode, EPISODES)
+    d2 = datetime.datetime.today() - d1
+    eta = datetime.timedelta(seconds=((d2.total_seconds() / (episode + 1)) * EPISODES)) - d2
+    print_progress_bar(episode, EPISODES, suffix="in " + str(d2) + " ETA: " + str(eta))
     episode_reward1 = 0
     episode_reward2 = 0
     episode_length = 0
@@ -105,6 +114,9 @@ for episode in range(EPISODES):
 
     done = False
     logic = True
+
+    last_model1_action = None
+    last_model2_action = None
 
     while not done:
         episode_length += 1
@@ -138,18 +150,60 @@ for episode in range(EPISODES):
             env.render()
             time.sleep(0.2)
 
-        if not done:
-            # Update the TARGET value
-            target = reward + DISCOUNT * np.max(model.predict(new_state))
 
-            # Current TARGET value (for current state and performed action)
-            current_target = model.predict(state)
+        # Update the TARGET value
+        target = reward + DISCOUNT * np.max(model.predict(new_state))
 
-            # Alter current TARGET value
-            current_target[0][action] = target
+        # Current TARGET value (for current state and performed action)
+        current_target = model.predict(state)
 
-            # Update the model with the TARGET values
-            model.fit(state, current_target, verbose=0)
+        # Alter current TARGET value
+        current_target[0][action] = target
+
+        # Update the model with the TARGET values
+        model.fit(state, current_target, verbose=0)
+
+        if done:
+            if reward == 1:
+                reward = -1
+            else:
+                reward = 0.5
+
+            if not logic:
+                model = model1
+                # Update the TARGET value
+                target = reward + DISCOUNT * np.max(model.predict(new_state))
+
+                # Current TARGET value (for current state and performed action)
+                current_target = model.predict(state)
+
+                # Alter current TARGET value
+                current_target[0][last_model1_action] = target
+
+                # Update the model with the TARGET values
+                model.fit(state, current_target, verbose=0)
+
+                episode_reward1 += reward
+            else:
+                model = model2
+                # Update the TARGET value
+                target = reward + DISCOUNT * np.max(model.predict(new_state))
+
+                # Current TARGET value (for current state and performed action)
+                current_target = model.predict(state)
+
+                # Alter current TARGET value
+                current_target[0][last_model2_action] = target
+
+                # Update the model with the TARGET values
+                model.fit(state, current_target, verbose=0)
+
+                episode_reward2 += reward
+
+        if logic:
+            last_model1_action = action
+        else:
+            last_model2_action = action
 
         state = new_state
 
@@ -172,6 +226,21 @@ for episode in range(EPISODES):
         aggr_ep_rewards['avg2'].append(average_reward2)
 
         print(f'Episode: {episode:>5d}, average of model 1: {average_reward1:>4.1f}, average of model 2: {average_reward2:>4.1f}, episode length: {episode_length:>3d}, current epsilon: {epsilon:>1.2f}')
+
+d2 = datetime.datetime.today() - d1
+print("Finished in {}.".format(str(d2)))
+
+# Saving models
+if not os.path.exists('model1'):
+    os.makedirs('model1')
+
+if not os.path.exists('model2'):
+        os.makedirs('model2')
+
+
+model1.save("model1/{}.h5".format(datetime.datetime.today().strftime("%d-%m-%Y-%H-%M-%S")))
+model1.save("model2/{}.h5".format(datetime.datetime.today().strftime("%d-%m-%Y-%H-%M-%S")))
+
 
 env.close()  # this was already here, no need to add it again. Just here so you know where we are :)
 
