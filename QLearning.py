@@ -42,6 +42,19 @@ def grid_reverse(grid):
             output.append(0)
     return output
 
+def test_trained_model():
+    env.reset()
+    while True:
+        player_input = int(input("Action (0-6) : "))
+        grille, reward, done, infos = env.step(player_input)
+        env.render()
+        if done:
+            break
+        prediction = np.argmax(model.predict(state)[0])
+        grille, reward, done, infos = env.step(prediction)
+        env.render()
+        if done:
+            break
 
 # Q-Learning settings
 DISCOUNT = 0.95
@@ -91,9 +104,6 @@ for episode in range(EPISODES):
 
         new_state, reward, done, _ = env.step(action)
 
-        if done and reward != 1:
-            raise EnvironmentError()
-
         new_state = np.array(new_state)
         new_state = new_state.reshape((1, 42))
 
@@ -142,17 +152,3 @@ plt.plot(aggr_ep_rewards['ep'], aggr_ep_rewards['max'], label="max rewards")
 plt.plot(aggr_ep_rewards['ep'], aggr_ep_rewards['min'], label="min rewards")
 plt.legend(loc=4)
 plt.show()
-
-def test_trained_model():
-    env.reset()
-    while True:
-        player_input = int(input("Action (0-6) : "))
-        grille, reward, done, infos = env.step(player_input)
-        env.render()
-        if done:
-            break
-        prediction = np.argmax(model.predict(state))
-        grille, reward, done, infos = env.step(prediction)
-        env.render()
-        if done:
-            break
