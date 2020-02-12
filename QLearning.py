@@ -59,7 +59,7 @@ def test_trained_model(model):
 # Q-Learning settings
 DISCOUNT = 0.95
 EPISODES = 5000
-STATS_EVERY = 100
+STATS_EVERY = 10
 SHOW_EVERY = 100
 
 # Exploration settings
@@ -162,7 +162,7 @@ for episode in range(EPISODES):
 
     if not episode % STATS_EVERY:
 
-        average_reward1 = sum(ep_rewards1[-STATS_EVERY:])/STATS_EVERY
+        average_reward1 = sum(ep_rewards1[-STATS_EVERY:]) / STATS_EVERY
         average_reward2 = sum(ep_rewards2[-STATS_EVERY:]) / STATS_EVERY
 
         aggr_ep_rewards['ep'].append(episode)
@@ -171,7 +171,7 @@ for episode in range(EPISODES):
         aggr_ep_rewards['avg1'].append(average_reward1)
         aggr_ep_rewards['avg2'].append(average_reward2)
 
-        print(f'Episode: {episode:>5d}, avg1: {average_reward1:>4.1f}, avg2: {average_reward2:>4.1f}, current epsilon: {epsilon:>1.2f}')
+        print(f'Episode: {episode:>5d}, average of model 1: {average_reward1:>4.1f}, average of model 2: {average_reward2:>4.1f}, episode length: {episode_length:>3d}, current epsilon: {epsilon:>1.2f}')
 
 env.close()  # this was already here, no need to add it again. Just here so you know where we are :)
 
