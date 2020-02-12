@@ -46,7 +46,7 @@ def grid_reverse(grid):
 
 # Q-Learning settings
 DISCOUNT = 0.95
-EPISODES = 1000
+EPISODES = 1
 STATS_EVERY = 1
 MAX_VALUE = 2
 MIN_VALUE = 0
@@ -65,9 +65,9 @@ aggr_ep_rewards = {'ep': [], 'avg': [], 'max': [], 'min': []}
 env = gym.make('gym_puissance4:puissance4-v0')
 
 model = tf.keras.Sequential([
-    tf.keras.layers.InputLayer(batch_input_shape=(6, 7, 1)),
+    tf.keras.layers.Flatten(batch_input_shape=(1, 42)),
     tf.keras.layers.Dense(168, activation="sigmoid"),
-    tf.keras.layers.Dense(7, activation="softmax")
+    tf.keras.layers.Dense(7, activation="linear")
 ])
 
 model.compile(loss='mse', optimizer='adam', metrics=['mae'])
@@ -76,7 +76,7 @@ for episode in range(EPISODES):
     print_progress_bar(episode, EPISODES)
     episode_reward = 0
     state = np.array(env.reset())
-    state = state.reshape((6, 7, 1))
+    state = state.reshape((1, 42))
     if episode % SHOW_EVERY == 0:
         render = True
     else:
@@ -98,7 +98,7 @@ for episode in range(EPISODES):
             raise EnvironmentError()
 
         new_state = np.array(new_state)
-        new_state = new_state.reshape((6, 7, 1))
+        new_state = new_state.reshape((1, 42))
 
         episode_reward += reward
 
@@ -118,7 +118,7 @@ for episode in range(EPISODES):
             current_target = model.predict(state)
 
             # Alter current TARGET value
-            current_target[0][action] = [target]
+            current_target[0][action] = target
 
             # Update the model with the TARGET values
             model.fit(state, current_target, verbose=0)
