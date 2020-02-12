@@ -62,7 +62,7 @@ aggr_ep_rewards = {'ep': [], 'avg': [], 'max': [], 'min': []}
 env = gym.make('gym_puissance4:puissance4-v0')
 
 model = tf.keras.Sequential([
-    tf.keras.layers.InputLayer(batch_input_shape=(6, 7)),
+    tf.keras.layers.InputLayer(batch_input_shape=(32, 6, 7)),
     tf.keras.layers.Dense(168, activation="sigmoid"),
     tf.keras.layers.Dense(7, activation="linear")
 ])
@@ -72,6 +72,7 @@ model.compile(loss='mse', optimizer='adam', metrics=['mae'])
 for episode in range(EPISODES):
     episode_reward = 0
     state = np.array(env.reset())
+    state = state.reshape((1, 6, 7))
     if episode % SHOW_EVERY == 0:
         render = True
     else:
@@ -90,6 +91,7 @@ for episode in range(EPISODES):
         new_state, reward, done, _ = env.step(action)
 
         new_state = np.array(new_state)
+        new_state = new_state.reshape((1, 6, 7))
 
         episode_reward += reward
 
