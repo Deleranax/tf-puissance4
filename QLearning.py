@@ -44,16 +44,23 @@ def grid_reverse(grid):
             output.append(0)
     return output
 
-def test_trained_model(model):
+def test_trained_model(model, reverse=False):
     env.reset()
     while True:
         player_input = int(input("Action (0-6) : "))
-        grille, reward, done, infos = env.step(player_input)
+        state, reward, done, infos = env.step(player_input)
         env.render()
         if done:
             break
+
+        if reverse:
+            state = grid_reverse(state)
+
+        state = np.array(state)
+        state = state.reshape((1, 42))
+
         prediction = np.argmax(model.predict(state)[0])
-        grille, reward, done, infos = env.step(prediction)
+        state, reward, done, infos = env.step(prediction)
         env.render()
         if done:
             break
@@ -80,21 +87,37 @@ aggr_ep_rewards = {'ep': [], 'epl': [], 'avg1': [], 'avg2': []}
 
 env = gym.make('gym_puissance4:puissance4-v0')
 
-model1 = tf.keras.Sequential([
-    tf.keras.layers.Flatten(batch_input_shape=(1, 42)),
-    tf.keras.layers.Dense(168, activation="sigmoid"),
-    tf.keras.layers.Dense(7, activation="linear")
-])
 
-model1.compile(loss='mse', optimizer='adam', metrics=['mae'])
+def create_model1():
+    model1 = tf.keras.Sequential([
+        tf.keras.layers.Flatten(batch_input_shape=(1, 42)),
+        tf.keras.layers.Dense(168, activation="sigmoid"),
+        tf.keras.layers.Dense(7, activation="linear")
+    ])
 
-model2 = tf.keras.Sequential([
-    tf.keras.layers.Flatten(batch_input_shape=(1, 42)),
-    tf.keras.layers.Dense(168, activation="sigmoid"),
-    tf.keras.layers.Dense(7, activation="linear")
-])
+    model1.compile(loss='mse', optimizer='adam', metrics=['mae'])
 
-model2.compile(loss='mse', optimizer='adam', metrics=['mae'])
+    return model1
+
+
+def create_model2():
+    model2 = tf.keras.Sequential([
+        tf.keras.layers.Flatten(batch_input_shape=(1, 42)),
+        tf.keras.layers.Dense(168, activation="sigmoid"),
+        tf.keras.layers.Dense(7, activation="linear")
+    ])
+
+    model2.compile(loss='mse', optimizer='adam', metrics=['mae'])
+
+    return model2
+
+
+# model1 = load_trained_model("model1/")
+model1 = create_model1()
+
+# model2 = load_trained_model("model1/")
+model2 = create_model2()
+
 
 d1 = datetime.datetime.today()
 
