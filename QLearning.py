@@ -62,9 +62,9 @@ aggr_ep_rewards = {'ep': [], 'avg': [], 'max': [], 'min': []}
 env = gym.make('gym_puissance4:puissance4-v0')
 
 model = tf.keras.Sequential([
-    tf.keras.layers.InputLayer(batch_input_shape=(32, 6, 7)),
+    tf.keras.layers.InputLayer(batch_input_shape=(6, 7, 1)),
     tf.keras.layers.Dense(168, activation="sigmoid"),
-    tf.keras.layers.Dense(7, activation="linear")
+    tf.keras.layers.Dense(7, activation="softmax")
 ])
 
 model.compile(loss='mse', optimizer='adam', metrics=['mae'])
@@ -72,7 +72,7 @@ model.compile(loss='mse', optimizer='adam', metrics=['mae'])
 for episode in range(EPISODES):
     episode_reward = 0
     state = np.array(env.reset())
-    state = state.reshape((1, 6, 7))
+    state = state.reshape((6, 7, 1))
     if episode % SHOW_EVERY == 0:
         render = True
     else:
@@ -83,7 +83,7 @@ for episode in range(EPISODES):
     while not done:
         if np.random.random() > epsilon:
             # Get action from Q table
-            action = np.argmax(model.predict(state))
+            action = np.argmax(model.predict(state)[0])
         else:
             # Get random action
             action = np.random.randint(0, env.action_space.n)
@@ -91,7 +91,7 @@ for episode in range(EPISODES):
         new_state, reward, done, _ = env.step(action)
 
         new_state = np.array(new_state)
-        new_state = new_state.reshape((1, 6, 7))
+        new_state = new_state.reshape((6, 7, 1))
 
         episode_reward += reward
 
@@ -111,7 +111,7 @@ for episode in range(EPISODES):
             current_target = model.predict(state)
 
             # Alter current TARGET value
-            current_target[action] = target
+            current_target[0][action] = [target]
 
             # Update the model with the TARGET values
             model.fit(state, current_target)
