@@ -6,6 +6,9 @@ import tensorflow as tf
 
 
 # Print iterations progress
+from docutils.io import InputError
+
+
 def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='', printEnd="\r"):
     """
     Call in a loop to create terminal progress bar
@@ -43,16 +46,16 @@ def grid_reverse(grid):
 
 # Q-Learning settings
 DISCOUNT = 0.95
-EPISODES = 5000
-STATS_EVERY = 100
+EPISODES = 1000
+STATS_EVERY = 1
 MAX_VALUE = 2
 MIN_VALUE = 0
 SHOW_EVERY = 1000
 
 # Exploration settings
 epsilon = 1  # not a constant, qoing to be decayed
-START_EPSILON_DECAYING = 5
-END_EPSILON_DECAYING = EPISODES//1
+START_EPSILON_DECAYING = 1
+END_EPSILON_DECAYING = EPISODES//1.2
 epsilon_decay_value = epsilon/(END_EPSILON_DECAYING - START_EPSILON_DECAYING)
 
 # For stats
@@ -70,6 +73,7 @@ model = tf.keras.Sequential([
 model.compile(loss='mse', optimizer='adam', metrics=['mae'])
 
 for episode in range(EPISODES):
+    print_progress_bar(episode, EPISODES)
     episode_reward = 0
     state = np.array(env.reset())
     state = state.reshape((6, 7, 1))
@@ -89,6 +93,9 @@ for episode in range(EPISODES):
             action = np.random.randint(0, env.action_space.n)
 
         new_state, reward, done, _ = env.step(action)
+
+        if done and reward != 1:
+            raise EnvironmentError()
 
         new_state = np.array(new_state)
         new_state = new_state.reshape((6, 7, 1))
@@ -114,7 +121,7 @@ for episode in range(EPISODES):
             current_target[0][action] = [target]
 
             # Update the model with the TARGET values
-            model.fit(state, current_target)
+            model.fit(state, current_target, verbose=0)
 
         state = new_state
 
