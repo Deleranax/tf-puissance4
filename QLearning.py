@@ -43,13 +43,10 @@ def grid_reverse(grid):
     return output
 
 
-
 # Q-Learning settings
 DISCOUNT = 0.95
-EPISODES = 1
-STATS_EVERY = 1
-MAX_VALUE = 2
-MIN_VALUE = 0
+EPISODES = 5000
+STATS_EVERY = 5
 SHOW_EVERY = 1000
 
 # Exploration settings
