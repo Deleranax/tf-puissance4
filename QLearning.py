@@ -59,8 +59,8 @@ def test_trained_model(model):
 # Q-Learning settings
 DISCOUNT = 0.95
 EPISODES = 5000
-STATS_EVERY = 10
-SHOW_EVERY = 1000
+STATS_EVERY = 100
+SHOW_EVERY = 100
 
 # Exploration settings
 epsilon = 1  # not a constant, qoing to be decayed
@@ -71,7 +71,7 @@ epsilon_decay_value = epsilon/(END_EPSILON_DECAYING - START_EPSILON_DECAYING)
 # For stats
 ep_rewards1 = []
 ep_rewards2 = []
-aggr_ep_rewards = {'ep': [], 'epl': [], 'avg1': [], 'max1': [], 'min1': [], 'avg2': [], 'max2': [], 'min2': []}
+aggr_ep_rewards = {'ep': [], 'epl': [], 'avg1': [], 'avg2': []}
 
 env = gym.make('gym_puissance4:puissance4-v0')
 
@@ -169,12 +169,8 @@ for episode in range(EPISODES):
         aggr_ep_rewards['epl'].append(episode_length)
 
         aggr_ep_rewards['avg1'].append(average_reward1)
-        aggr_ep_rewards['max1'].append(max(ep_rewards1[-STATS_EVERY:]))
-        aggr_ep_rewards['min1'].append(min(ep_rewards1[-STATS_EVERY:]))
-
         aggr_ep_rewards['avg2'].append(average_reward2)
-        aggr_ep_rewards['max2'].append(max(ep_rewards2[-STATS_EVERY:]))
-        aggr_ep_rewards['min2'].append(min(ep_rewards2[-STATS_EVERY:]))
+
         print(f'Episode: {episode:>5d}, avg1: {average_reward1:>4.1f}, avg2: {average_reward2:>4.1f}, current epsilon: {epsilon:>1.2f}')
 
 env.close()  # this was already here, no need to add it again. Just here so you know where we are :)
@@ -182,12 +178,8 @@ env.close()  # this was already here, no need to add it again. Just here so you 
 plt.plot(aggr_ep_rewards['ep'], aggr_ep_rewards['epl'], label="episode length")
 
 plt.plot(aggr_ep_rewards['ep'], aggr_ep_rewards['avg1'], label="average rewards (model 1)")
-plt.plot(aggr_ep_rewards['ep'], aggr_ep_rewards['max1'], label="max rewards (model 1)")
-plt.plot(aggr_ep_rewards['ep'], aggr_ep_rewards['min1'], label="min rewards (model 1)")
 
 plt.plot(aggr_ep_rewards['ep'], aggr_ep_rewards['avg2'], label="average rewards (model 2)")
-plt.plot(aggr_ep_rewards['ep'], aggr_ep_rewards['max2'], label="max rewards (model 2)")
-plt.plot(aggr_ep_rewards['ep'], aggr_ep_rewards['min2'], label="min rewards (model 2)")
 
 plt.legend(loc=4)
 plt.show()
