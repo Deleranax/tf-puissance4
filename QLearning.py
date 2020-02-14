@@ -8,9 +8,6 @@ import os
 
 
 # Print iterations progress
-from docutils.io import InputError
-
-
 def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='=', printEnd="\r"):
     """
     Call in a loop to create terminal progress bar
