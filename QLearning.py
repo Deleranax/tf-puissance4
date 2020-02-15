@@ -128,7 +128,7 @@ for episode in range(EPISODES):
     time_per_episode = d2.total_seconds() / (episode + 1)
     finish = datetime.timedelta(seconds=(time_per_episode * EPISODES))
     eta = finish - d2
-    print_progress_bar(episode, EPISODES, suffix=f"in {str(d2)[:-7]}/{str(finish)[:-7]} ETA: {str(eta)[:-7]} ({time_per_episode[:4]}s/episode)")
+    print_progress_bar(episode, EPISODES, suffix=f"in {str(d2)[:-7]}/{str(finish)[:-7]} ETA: {str(eta)[:-7]} ({str(time_per_episode)[:4]}s/episode)")
     episode_reward1 = 0
     episode_reward2 = 0
     episode_length = 0
