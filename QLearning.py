@@ -283,6 +283,8 @@ if not os.path.exists('model2'):
 
 model1.save("model1/{}.h5".format(datetime.datetime.today().strftime("%d-%m-%Y-%H-%M-%S")))
 model2.save("model2/{}.h5".format(datetime.datetime.today().strftime("%d-%m-%Y-%H-%M-%S")))
+model1.save("model1/latest.h5")
+model2.save("model2/latest.h5")
 
 
 env.close()  # this was already here, no need to add it again. Just here so you know where we are :)
