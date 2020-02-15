@@ -70,9 +70,9 @@ def load_trained_model(path):
 
 # Q-Learning settings
 DISCOUNT = 0.95
-EPISODES = 10
+EPISODES = 1000
 STATS_EVERY = 10
-SHOW_EVERY = 100
+SHOW_EVERY = 1000
 BACKUP_EVERY = 1000
 
 # Exploration settings
@@ -131,6 +131,7 @@ for episode in range(EPISODES):
     episode_length = 0
     state = np.array(env.reset())
     state = state.reshape((1, 42))
+
     if episode % SHOW_EVERY == 0:
         render = True
     else:
