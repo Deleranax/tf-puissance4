@@ -174,7 +174,7 @@ for episode in range(EPISODES):
 
         if render:
             env.render()
-            time.sleep(1)
+            time.sleep(0.2)
 
 
         # Update the TARGET value
