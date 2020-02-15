@@ -35,7 +35,7 @@ def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, lengt
 
 def grid_reverse(grid):
     output = []
-    for i in grid:
+    for i in grid[0]:
         if i == 1:
             output.append(2)
         elif i == 2:
@@ -70,8 +70,8 @@ def load_trained_model(path):
 
 # Q-Learning settings
 DISCOUNT = 0.95
-EPISODES = 10
-STATS_EVERY = 1
+EPISODES = 1000
+STATS_EVERY = 10
 SHOW_EVERY = 100
 
 # Exploration settings
@@ -262,7 +262,7 @@ if not os.path.exists('model2'):
 
 
 model1.save("model1/{}.h5".format(datetime.datetime.today().strftime("%d-%m-%Y-%H-%M-%S")))
-model1.save("model2/{}.h5".format(datetime.datetime.today().strftime("%d-%m-%Y-%H-%M-%S")))
+model2.save("model2/{}.h5".format(datetime.datetime.today().strftime("%d-%m-%Y-%H-%M-%S")))
 
 
 env.close()  # this was already here, no need to add it again. Just here so you know where we are :)
