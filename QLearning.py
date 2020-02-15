@@ -70,7 +70,7 @@ def load_trained_model(path):
 
 # Q-Learning settings
 DISCOUNT = 0.95
-EPISODES = 1000
+EPISODES = 2000
 STATS_EVERY = 10
 SHOW_EVERY = 1000
 BACKUP_EVERY = 1000
@@ -124,8 +124,9 @@ d1 = datetime.datetime.today()
 
 for episode in range(EPISODES):
     d2 = datetime.datetime.today() - d1
-    eta = datetime.timedelta(seconds=((d2.total_seconds() / (episode + 1)) * EPISODES)) - d2
-    print_progress_bar(episode, EPISODES, suffix="in " + str(d2)[:-7] + " ETA: " + str(eta)[:-7])
+    finish = datetime.timedelta(seconds=((d2.total_seconds() / (episode + 1)) * EPISODES))
+    eta = finish - d2
+    print_progress_bar(episode, EPISODES, suffix="in " + str(d2)[:-7] + "/" + str(finish)[:-7] + " ETA: " + str(eta)[:-7])
     episode_reward1 = 0
     episode_reward2 = 0
     episode_length = 0
