@@ -114,10 +114,10 @@ def create_model2():
     return model2
 
 
-model1 = load_trained_model("model1/15-02-2020-21-01-29.h5")
+model1 = load_trained_model("model1/latest.h5")
 # model1 = create_model1()
 
-model2 = load_trained_model("model1/15-02-2020-21-01-29.h5")
+model2 = load_trained_model("model1/latest.h5")
 # model2 = create_model2()
 
 
