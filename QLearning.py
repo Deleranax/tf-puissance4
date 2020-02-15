@@ -71,7 +71,7 @@ def load_trained_model(path):
 # Q-Learning settings
 DISCOUNT = 0.95
 EPISODES = 2000
-STATS_EVERY = 10
+STATS_EVERY = 100
 SHOW_EVERY = 1000
 BACKUP_EVERY = 1000
 
@@ -174,7 +174,7 @@ for episode in range(EPISODES):
 
         if render:
             env.render()
-            time.sleep(0.2)
+            time.sleep(1)
 
 
         # Update the TARGET value
