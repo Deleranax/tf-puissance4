@@ -276,7 +276,7 @@ if not os.path.exists('model1'):
     os.makedirs('model1')
 
 if not os.path.exists('model2'):
-        os.makedirs('model2')
+    os.makedirs('model2')
 
 
 model1.save("model1/{}.h5".format(datetime.datetime.today().strftime("%d-%m-%Y-%H-%M-%S")))
