@@ -69,7 +69,7 @@ def load_trained_model(path):
 
 
 # Q-Learning settings
-LEARNING_RATE = 1.5
+LEARNING_RATE = 5
 DISCOUNT = 0.95
 EPISODES = 4000
 STATS_EVERY = 100
@@ -128,7 +128,7 @@ for episode in range(EPISODES):
     time_per_episode = d2.total_seconds() / (episode + 1)
     finish = datetime.timedelta(seconds=(time_per_episode * EPISODES))
     eta = finish - d2
-    print_progress_bar(episode, EPISODES, suffix="in " + str(d2)[:-7] + "/" + str(finish)[:-7] + " ETA: " + str(eta)[:-7] + f" ({time_per_episode}s/episode)")
+    print_progress_bar(episode, EPISODES, suffix=f"in {str(d2)[:-7]}/{str(finish)[:-7]} ETA: {str(eta)[:-7]} ({time_per_episode}s/episode)")
     episode_reward1 = 0
     episode_reward2 = 0
     episode_length = 0
