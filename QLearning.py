@@ -69,8 +69,9 @@ def load_trained_model(path):
 
 
 # Q-Learning settings
+LEARNING_RATE = 1.5
 DISCOUNT = 0.95
-EPISODES = 2000
+EPISODES = 4000
 STATS_EVERY = 100
 SHOW_EVERY = 1000
 BACKUP_EVERY = 1000
@@ -113,20 +114,21 @@ def create_model2():
     return model2
 
 
-# model1 = load_trained_model("model1/")
-model1 = create_model1()
+model1 = load_trained_model("model1/15-02-2020-21-01-29.h5")
+# model1 = create_model1()
 
-# model2 = load_trained_model("model1/")
-model2 = create_model2()
+model2 = load_trained_model("model1/15-02-2020-21-01-29.h5")
+# model2 = create_model2()
 
 
 d1 = datetime.datetime.today()
 
 for episode in range(EPISODES):
     d2 = datetime.datetime.today() - d1
-    finish = datetime.timedelta(seconds=((d2.total_seconds() / (episode + 1)) * EPISODES))
+    time_per_episode = d2.total_seconds() / (episode + 1)
+    finish = datetime.timedelta(seconds=(time_per_episode * EPISODES))
     eta = finish - d2
-    print_progress_bar(episode, EPISODES, suffix="in " + str(d2)[:-7] + "/" + str(finish)[:-7] + " ETA: " + str(eta)[:-7])
+    print_progress_bar(episode, EPISODES, suffix="in " + str(d2)[:-7] + "/" + str(finish)[:-7] + " ETA: " + str(eta)[:-7] + f" ({time_per_episode}s/episode)")
     episode_reward1 = 0
     episode_reward2 = 0
     episode_length = 0
@@ -178,7 +180,7 @@ for episode in range(EPISODES):
 
 
         # Update the TARGET value
-        target = reward + DISCOUNT * np.max(model.predict(new_state))
+        target = reward * LEARNING_RATE + DISCOUNT * np.max(model.predict(new_state))
 
         # Current TARGET value (for current state and performed action)
         current_target = model.predict(state)
@@ -198,7 +200,7 @@ for episode in range(EPISODES):
             if not logic:
                 model = model1
                 # Update the TARGET value
-                target = reward + DISCOUNT * np.max(model.predict(new_state))
+                target = reward * LEARNING_RATE + DISCOUNT * np.max(model.predict(new_state))
 
                 # Current TARGET value (for current state and performed action)
                 current_target = model.predict(state)
@@ -213,7 +215,7 @@ for episode in range(EPISODES):
             else:
                 model = model2
                 # Update the TARGET value
-                target = reward + DISCOUNT * np.max(model.predict(new_state))
+                target = reward * LEARNING_RATE + DISCOUNT * np.max(model.predict(new_state))
 
                 # Current TARGET value (for current state and performed action)
                 current_target = model.predict(state)
