@@ -39,7 +39,8 @@ def grid_reverse(grid):
             output.append(1)
         else:
             output.append(0)
-    return output
+    return np.array([output])
+
 
 def test_trained_model(model, reverse=False):
     env.reset()
@@ -50,31 +51,34 @@ def test_trained_model(model, reverse=False):
         if done:
             break
 
-        if reverse:
-            state = grid_reverse(state)
-
         state = np.array(state)
         state = state.reshape((1, 42))
 
-        prediction = np.argmax(model.predict(state)[0])
+        if reverse:
+            state = grid_reverse(state)
+
+        prediction = np.argmax(model.predict(state))
         state, reward, done, infos = env.step(prediction)
         env.render()
         if done:
             break
 
+
 def load_trained_model(path):
     return tf.keras.models.load_model(path)
 
+
 # Q-Learning settings
 DISCOUNT = 0.95
-EPISODES = 1000
+EPISODES = 10
 STATS_EVERY = 10
 SHOW_EVERY = 100
+BACKUP_EVERY = 1000
 
 # Exploration settings
 epsilon = 1  # not a constant, qoing to be decayed
 START_EPSILON_DECAYING = 10
-END_EPSILON_DECAYING = EPISODES//1.2
+END_EPSILON_DECAYING = 1000
 epsilon_decay_value = epsilon/(END_EPSILON_DECAYING - START_EPSILON_DECAYING)
 
 # For stats
@@ -121,7 +125,7 @@ d1 = datetime.datetime.today()
 for episode in range(EPISODES):
     d2 = datetime.datetime.today() - d1
     eta = datetime.timedelta(seconds=((d2.total_seconds() / (episode + 1)) * EPISODES)) - d2
-    print_progress_bar(episode, EPISODES, suffix="in " + str(d2) + " ETA: " + str(eta))
+    print_progress_bar(episode, EPISODES, suffix="in " + str(d2)[:-7] + " ETA: " + str(eta)[:-7])
     episode_reward1 = 0
     episode_reward2 = 0
     episode_length = 0
@@ -234,8 +238,23 @@ for episode in range(EPISODES):
     ep_rewards1.append(episode_reward1)
     ep_rewards2.append(episode_reward2)
 
-    if not episode % STATS_EVERY:
+    if not episode % BACKUP_EVERY:
+        if not os.path.exists('model1'):
+            os.makedirs('model1')
 
+        if not os.path.exists('model2'):
+            os.makedirs('model2')
+
+        if not os.path.exists('model1/checkpoints'):
+            os.makedirs('model1/checkpoints')
+
+        if not os.path.exists('model2/checkpoints'):
+            os.makedirs('model2/checkpoints')
+
+        model1.save("model1/checkpoints/{}.h5".format(episode))
+        model2.save("model2/checkpoints/{}.h5".format(episode))
+
+    if not episode % STATS_EVERY:
         average_reward1 = sum(ep_rewards1[-STATS_EVERY:]) / STATS_EVERY
         average_reward2 = sum(ep_rewards2[-STATS_EVERY:]) / STATS_EVERY
 
@@ -248,7 +267,7 @@ for episode in range(EPISODES):
         print(f'Episode: {episode:>5d}, average of model 1: {average_reward1:>4.1f}, average of model 2: {average_reward2:>4.1f}, episode length: {episode_length:>3d}, current epsilon: {epsilon:>1.2f}')
 
 d2 = datetime.datetime.today() - d1
-print("Finished in {}.".format(str(d2)))
+print("Finished in {}.".format(str(d2)[:-7]))
 
 # Saving models
 if not os.path.exists('model1'):
