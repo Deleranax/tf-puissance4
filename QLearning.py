@@ -88,8 +88,6 @@ aggr_ep_rewards = {'ep': [], 'epl': [], 'avg1': [], 'avg2': []}
 
 env = gym.make('gym_puissance4:puissance4-v0')
 
-time.sleep(10)
-
 def create_model1():
     model1 = tf.keras.Sequential([
         tf.keras.layers.Flatten(batch_input_shape=(1, 42)),
